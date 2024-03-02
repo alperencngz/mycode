@@ -1,5 +1,7 @@
 public class LinkedList {
 
+    //Bütün Node yerlerini NodePolynom olarak değiştirdim
+
     protected Node head;
     protected Node tail;
 
@@ -24,7 +26,7 @@ public class LinkedList {
         head = newNode;
     }
 
-    public void insertLast(NodePolynom newNode) {
+    public void insertLast(Node newNode) {
         if (isEmpty()) {
             head = newNode;
         } else {

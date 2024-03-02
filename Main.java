@@ -3,8 +3,8 @@ import java.io.*;
 public class Main {
     public static void main(String[] args) {
 
-        String filePath = "C:\\Users\\co028953\\Desktop\\input.txt";
-        String newFilePath = "C:\\Users\\co028953\\Desktop\\output.txt";
+        String filePath = "/Users/alperencngzz/Desktop/input.txt";
+        String newFilePath = "/Users/alperencngzz/Desktop/output.txt";
         int numberOfTestLines = 0;
         LinkedList result = new LinkedList();
 
@@ -25,19 +25,32 @@ public class Main {
                 String firstPolynom = parts[1];
                 String secondPolynom = parts[2];
 
+                System.out.println(operation);
+
                 // now our linkedLists are ready
                 LinkedList firstPolynomLinkedList = stringToLinkedList(firstPolynom);
                 LinkedList secondPoynomLinkedList = stringToLinkedList(secondPolynom);
 
-                if (operation == "+") {
+                System.out.println(secondPoynomLinkedList.getHead().getNext().getCoefficient());
+
+                if (operation.equals("+")) {
                     result = polynomialAddition(firstPolynomLinkedList, secondPoynomLinkedList);
+                    System.out.println("in addition");
+                    Node currentNode = result.getHead();
+
+                    while (currentNode != null) {
+                        System.out.println(currentNode.getCoefficient() + currentNode.getComponent());
+                        currentNode = currentNode.getNext();
+                    }
+
+                    System.out.println("Addition finished");
                 }
 
-                if (operation == "-") {
-                    result = polynomialSubstraction(firstPolynomLinkedList, secondPoynomLinkedList);
+                if (operation.equals("-")) {
+                    result = polynomialSubtraction(firstPolynomLinkedList, secondPoynomLinkedList);
                 }
 
-                if (operation == "*") {
+                if (operation.equals("*")) {
                     result = polynomialMultiplication(firstPolynomLinkedList, secondPoynomLinkedList);
                 }
             }
@@ -79,27 +92,70 @@ public class Main {
         return polynomLinkedList;
     }
 
-    public static NodePolynom termToNode(String term) {
+    public static Node termToNode(String term) {
+        int coefficient = 1; // default coefficient if no explicit coefficient is found
+        String component = term; // default component if no letter is found
 
-        String[] parts = term.split("x", 2);
-
-        // left side of x is coefficient
-        int coefficient = Integer.parseInt(parts[0]);
-
-        // rightside of x is our component (x3y2 etc.)
-        String component = parts[1];
-
-        return new NodePolynom(coefficient, component);
+        for (int i = 0; i < term.length(); i++) {
+            if (Character.isLetter(term.charAt(i))) {
+                // If a letter is found, split the term into coefficient and component
+                String coefficientStr = term.substring(0, i);
+                coefficient = coefficientStr.isEmpty() ? 1 : Integer.parseInt(coefficientStr);
+                component = term.substring(i);
+                break;
+            }
+        }
+        // If the component is "0", set the coefficient to 0
+        if (component.equals("0")) {
+            coefficient = 0;
+        }
+        return new Node(coefficient, component);
     }
 
     public static LinkedList polynomialAddition(LinkedList firstPolynom, LinkedList secondPolynom){
-        LinkedList result = new LinkedList();
-        NodePolynom currentNode = (NodePolynom) firstPolynom.getHead();
+        LinkedList result = firstPolynom;
+        Node currentNodeToAdd = secondPolynom.getHead();
 
+        while (currentNodeToAdd != null) {
+            boolean containsSameComponent = findTerm(result, currentNodeToAdd);
+            if (containsSameComponent) {
+                addTerm(result, currentNodeToAdd);
+            } else {
+                result.insertLast(new Node(currentNodeToAdd.getCoefficient(), currentNodeToAdd.getComponent()));
+            }
+
+            currentNodeToAdd = currentNodeToAdd.getNext();
+        }
+        
         return result;
     }
+    
+    public static void addTerm(LinkedList polynomial, Node additionalNode){
+        Node currentNode = polynomial.getHead();
+        
+        while (currentNode != null) {
+            if (currentNode.getComponent().equals(additionalNode.getComponent())) {
+                currentNode.setCoefficient(currentNode.getCoefficient() + additionalNode.getCoefficient());
+                return;  // Return after updating the coefficient since there can be only 1 with same component
+            }
 
-    public static LinkedList polynomialSubstraction(LinkedList firstPolynom, LinkedList secondPolynom){
+            currentNode = currentNode.getNext();
+        }
+    }
+    
+    public static boolean findTerm(LinkedList polynomial, Node term){
+        Node currentNode = polynomial.getHead();
+        
+        while(currentNode != null) {
+            if (currentNode.getComponent().equals(term.getComponent())) {
+                return true;
+            }
+            currentNode = currentNode.getNext();
+        }
+        return false;
+    }
+
+    public static LinkedList polynomialSubtraction(LinkedList firstPolynom, LinkedList secondPolynom){
         return new LinkedList();
     }
 
@@ -107,3 +163,5 @@ public class Main {
         return new LinkedList();
     }
 }
+
+// TODO EXCEPTION 1 ILE BASLARSA mesela xyz polinomu BURDA DA AYIRIRKEN COEF-TERM OLARAK COEFE 1 VERMEYI UNUTMA
