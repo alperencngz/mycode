@@ -1,7 +1,5 @@
 public class LinkedList {
 
-    //Bütün Node yerlerini NodePolynom olarak değiştirdim
-
     protected Node head;
     protected Node tail;
 
