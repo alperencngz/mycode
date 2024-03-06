@@ -125,7 +125,8 @@ public class Main {
             if (currentNode.getCoefficient() > 0){
                 polynomString.append("+" + ((currentNode.getCoefficient() == 1) ? "" : currentNode.getCoefficient()) + currentNode.getComponent());
             } else if (currentNode.getCoefficient() < 0) {
-                polynomString.append(((currentNode.getCoefficient() == 1) ? "" : currentNode.getCoefficient()) + currentNode.getComponent());
+                // TODO -1'i düzgün yapıyor mu kontrol et
+                polynomString.append(((currentNode.getCoefficient() == 1) ? "-" : currentNode.getCoefficient()) + currentNode.getComponent());
             }
             currentNode = currentNode.getNext();
         }
@@ -251,6 +252,72 @@ public class Main {
     }
 
     public  static LinkedList polynomialMultiplication(LinkedList firstPolynom, LinkedList secondPolynom) {
+        LinkedList result = new LinkedList();
+        Node currentNodeFirst = firstPolynom.getHead();
+
+        while(currentNodeFirst != null){
+            Node currentNodeSecond = secondPolynom.getHead();
+            LinkedList multipliedNodes = new LinkedList();
+
+            while (currentNodeSecond != null){
+                // TODO CREATE LOGIC TO MULPTILPYING 2 NODES IN ANOTHER METHOD AND USE IT HERE
+                // TODO USE ADDITION METHOD WE CREATED EARLIER TO COMBINE THE NODES
+                // TODO DO THIS STEP FOR EVERY NODE IN FIRSTPOLYNOM, MULT THEM IN SECONDPOLYNOM'S NODES
+                // TODO AFTER EVERYTHING IS FINISHED, OUR JOB WOULD BE DONE.
+                Node multipliedNode = nodeMultiplication(currentNodeFirst, currentNodeSecond);
+                multipliedNodes.insertLast(multipliedNode);
+                currentNodeSecond = currentNodeSecond.getNext();
+            }
+            polynomialAddition(result, multipliedNodes);
+            currentNodeFirst = currentNodeFirst.getNext();
+        }
+
+
         return new LinkedList();
+    }
+
+    private static Node nodeMultiplication(Node node1, Node node2){
+        // Multiply coefficients
+        int newCoefficient = node1.getCoefficient() * node2.getCoefficient();
+
+        // Multiply components
+        String newComponent = multiplyComponents(node1.getComponent(), node2.getComponent());
+
+        return new Node(newCoefficient, newComponent);
+    }
+
+    private static String multiplyComponents(String component1, String component2) {
+        String resultComponent = "";
+
+        // LOGIC FOR MULTIPLICATION OF COMPONENTS
+
+        return resultComponent;
+    }
+
+    private static int getExponentFromComponent(String component, String variable) {
+        // Extract the exponent from the component for the given variable
+        // Example: if given x241y352z41 and variable x, the return should be 241
+        // Example: if given x241y352z41 and variable y, the return should be 352
+        // Example: if given x241y352z41 and variable z, the return should be 41
+        int startIndex = component.indexOf(variable);
+        if (startIndex == -1) {
+            // Variable not found in the component
+            return 0;
+        }
+        int endIndex = startIndex + variable.length();
+        StringBuilder exponentString = new StringBuilder();
+
+        // Extract the substring containing the exponent
+        for (int i = endIndex; i < component.length(); i++) {
+            char currentChar = component.charAt(i);
+            if (Character.isDigit(currentChar)) {
+                exponentString.append(currentChar);
+            } else {
+                // Break if a non-digit character is encountered
+                break;
+            }
+        }
+        // Convert the exponent string to an integer
+        return exponentString.length() > 0 ? Integer.parseInt(exponentString.toString()) : 1;
     }
 }
