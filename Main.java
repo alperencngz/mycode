@@ -11,7 +11,6 @@ public class Main {
         String[] resultsAsStrings = null;
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))){
-            System.out.println("In try block of reader");
             numberOfTestLines = Integer.parseInt(br.readLine());
 
             resultsAsStrings = new String[numberOfTestLines];
@@ -22,7 +21,6 @@ public class Main {
 
             while((line = br.readLine()) != null && readedLines <= numberOfTestLines){
                 readedLines++;
-                System.out.println(line);
 
                 String[] parts = line.split("\\s+");
 
@@ -30,18 +28,12 @@ public class Main {
                 String firstPolynom = parts[1];
                 String secondPolynom = parts[2];
 
-                System.out.println(operation);
-
                 // now our linkedLists are ready
                 LinkedList firstPolynomLinkedList = stringToLinkedList(firstPolynom);
                 LinkedList secondPoynomLinkedList = stringToLinkedList(secondPolynom);
 
-                System.out.println(secondPoynomLinkedList.getHead().getNext().getCoefficient());
-
                 if (operation.equals("+")) {
-                    System.out.println("in addition");
                     result = polynomialAddition(firstPolynomLinkedList, secondPoynomLinkedList);
-                    System.out.println("Addition finished");
                 }
 
                 if (operation.equals("-")) {
@@ -50,16 +42,26 @@ public class Main {
 
                 if (operation.equals("*")) {
                     result = polynomialMultiplication(firstPolynomLinkedList, secondPoynomLinkedList);
+                    String resultString = linkedListToString(result);
+                    resultsAsStrings[testCaseIndex] = resultString;
+                    testCaseIndex++;
+                    continue;
                 }
+
+                String resultBeforeSort = linkedListToString(result);
+
+                System.out.println("BEFORE   " + resultBeforeSort);
 
                 // sort the result polynomial before converting to string
                 LinkedList sortedResult = sortPolynomialLinkedList(result);
 
                 String resultString = linkedListToString(sortedResult);
 
+                System.out.println("AFTER   " + resultString);
+
+
                 resultsAsStrings[testCaseIndex] = resultString; // Store result string in the array
                 testCaseIndex++; // Move to the next test case index
-                System.out.println(resultString);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -71,7 +73,6 @@ public class Main {
                 writer.write(resultString);
                 writer.newLine(); // Add a new line after each result
             }
-            System.out.println("File has been written successfully.");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -103,7 +104,7 @@ public class Main {
             if (Character.isLetter(term.charAt(i))) {
                 // If a letter is found, split the term into coefficient and component
                 String coefficientStr = term.substring(0, i);
-                coefficient = coefficientStr.isEmpty() ? 1 : Integer.parseInt(coefficientStr);
+                coefficient = (coefficientStr.isEmpty() || coefficientStr.equals("+")) ? 1 : Integer.parseInt(coefficientStr);
                 if (sign == -1){
                     coefficient *= -1;
                 }
@@ -172,7 +173,6 @@ public class Main {
         // Iterate through the original linked list
         while (currentNode != null) {
             insertIntoSorted(sortedList, new Node(currentNode.getCoefficient(), currentNode.getComponent()));
-            System.out.println("CURRENT NODE: " + currentNode.getComponent());
             currentNode = currentNode.getNext();
         }
 
@@ -186,7 +186,6 @@ public class Main {
         // Find the correct position to insert the new node based on precedence rules
 
         while (current != null && compareNodes(newNode, current) > 0) {
-            System.out.println(newNode.getComponent() + "second term: " + current.getComponent() + " result: " + compareNodes(newNode, current));
             previous = current;
             current = current.getNext();
         }
@@ -273,7 +272,7 @@ public class Main {
         }
 
 
-        return new LinkedList();
+        return result;
     }
 
     private static Node nodeMultiplication(Node node1, Node node2){
@@ -281,17 +280,51 @@ public class Main {
         int newCoefficient = node1.getCoefficient() * node2.getCoefficient();
 
         // Multiply components
-        String newComponent = multiplyComponents(node1.getComponent(), node2.getComponent());
+        String newComponent = multiplyComponents(node1.getComponent(), node2.getComponent(), newCoefficient);
 
         return new Node(newCoefficient, newComponent);
     }
 
-    private static String multiplyComponents(String component1, String component2) {
-        String resultComponent = "";
+    private static String multiplyComponents(String component1, String component2, int newCoefficient) {
+        StringBuilder resultComponent = new StringBuilder();
+        int[] exponents1 = new int[3];
+        int[] exponents2 = new int[3];
+        int[] newExponents = setExponents(exponents1, exponents2, component1, component2);
 
-        // LOGIC FOR MULTIPLICATION OF COMPONENTS
+        int newXExponent = newExponents[0];
+        int newYExponent = newExponents[1];
+        int newZExponent = newExponents[2];
+        if (newXExponent != 0){
+            resultComponent.append("x" + ((newXExponent == 1) ? "" : newXExponent));
+        }
+        if (newYExponent != 0){
+            resultComponent.append("y" + ((newYExponent == 1) ? "" : newYExponent));
+        }
+        if (newZExponent != 0){
+            resultComponent.append("z" + ((newZExponent == 1) ? "" : newZExponent));
+        }
+        return resultComponent.toString();
+    }
 
-        return resultComponent;
+    private static int getSign(String component) {
+        return component.startsWith("-") ? -1 : 1;
+    }
+
+    private static int[] setExponents(int[] exponents1, int[] exponents2, String component1, String component2){
+        exponents1[0] = getExponentFromComponent(component1,"x");
+        exponents1[1] = getExponentFromComponent(component1,"y");
+        exponents1[2] = getExponentFromComponent(component1,"z");
+        exponents2[0] = getExponentFromComponent(component2,"x");
+        exponents2[1] = getExponentFromComponent(component2,"y");
+        exponents2[2] = getExponentFromComponent(component2,"z");
+        int newXExponent = exponents1[0] + exponents2[0];
+        int newYExponent = exponents1[1] + exponents2[1];
+        int newZExponent = exponents1[2] + exponents2[2];
+        int[] exponents = new int[3];
+        exponents[0] = newXExponent;
+        exponents[1] = newYExponent;
+        exponents[2] = newZExponent;
+        return exponents;
     }
 
     private static int getExponentFromComponent(String component, String variable) {
