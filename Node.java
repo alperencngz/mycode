@@ -1,15 +1,47 @@
+/**
+ * The Node class represents a node in a linked list for polynomial terms.
+ * Each node contains an integer coefficient, a string component representing a variable,
+ * and a reference to the next node in the linked list.
+ */
+
 public class Node {
+
+    /**
+     * The integer coefficient of the polynomial term.
+     */
     protected int data;
+
+    /**
+     * The reference to the next node in the linked list.
+     */
     protected Node next;
+
+    /**
+     * The string component representing a variable in the polynomial term.
+     */
     protected String component;
 
+    /**
+     * Constructs a new Node with the given coefficient and component.
+     *
+     * @param data      The coefficient of the polynomial term.
+     * @param component The string component representing a variable.
+     */
     public Node(int data, String component){
         this.data = data;
         this.next = null;
         this.component = component;
     }
 
-    // Compare two nodes based on precedence rules
+    /**
+     * Compares the current node with another node based on precedence rules.
+     * The comparison is made based on the components (x, y, z) and exponents of the components.
+     *
+     * @param otherNode The node to compare with.
+     * @return A negative integer if the other node has higher precedence,
+     *         a positive integer if the current node has higher precedence,
+     *         or zero if they have the same precedence.
+     */
     public int compareToPrecedence(Node otherNode) {
         // Compare based on components (x, y, z) and exponents of components
 
@@ -58,7 +90,12 @@ public class Node {
         }
     }
 
-    // TODO GET EXPONENTI BITIR VE SONRA DA YUKARIDAKI YERI TEK TEK IF STATEMENTLERLE BITIRIP GPT'YE AT 20 SATIRA INDIRSIN
+    /**
+     * Gets the exponent of the specified variable in the current component.
+     *
+     * @param variable The variable (x, y, z) for which the exponent needs to be obtained.
+     * @return The exponent of the variable in the current component.
+     */
     private int getExponent(String variable) {
         // Extract the exponent from the component for the given variable
         String[] parts = this.component.split(variable);
@@ -78,30 +115,65 @@ public class Node {
         return 1; // Default exponent if not found
     }
 
+    /**
+     * Sets the next node in the linked list.
+     *
+     * @param next The next node in the linked list.
+     */
     public void setNext(Node next){
         this.next = next;
     }
 
+    /**
+     * Gets the next node in the linked list.
+     *
+     * @return The next node in the linked list.
+     */
     public Node getNext(){
         return next;
     }
 
+    /**
+     * Gets the coefficient of the polynomial term.
+     *
+     * @return The coefficient of the polynomial term.
+     */
     public int getData(){
         return data;
     }
 
+    /**
+     * Gets the string component representing a variable in the polynomial term.
+     *
+     * @return The string component representing a variable.
+     */
     public String getComponent(){
         return this.component;
     }
 
+    /**
+     * Gets the coefficient of the polynomial term.
+     *
+     * @return The coefficient of the polynomial term.
+     */
     public int getCoefficient(){
         return this.data;
     }
 
+    /**
+     * Sets a new coefficient for the polynomial term.
+     *
+     * @param newCoefficient The new coefficient to set.
+     */
     public void setCoefficient(int newCoefficient) {
         this.data = newCoefficient;
     }
 
+    /**
+     * Converts the node to a string representation.
+     *
+     * @return A string representation of the node.
+     */
     public String toString(){
         return "" + data;
     }
