@@ -42,23 +42,11 @@ public class Main {
 
                 if (operation.equals("*")) {
                     result = polynomialMultiplication(firstPolynomLinkedList, secondPoynomLinkedList);
-                    String resultString = linkedListToString(result);
-                    resultsAsStrings[testCaseIndex] = resultString;
-                    testCaseIndex++;
-                    continue;
                 }
-
-                String resultBeforeSort = linkedListToString(result);
-
-                System.out.println("BEFORE   " + resultBeforeSort);
 
                 // sort the result polynomial before converting to string
                 LinkedList sortedResult = sortPolynomialLinkedList(result);
-
                 String resultString = linkedListToString(sortedResult);
-
-                System.out.println("AFTER   " + resultString);
-
 
                 resultsAsStrings[testCaseIndex] = resultString; // Store result string in the array
                 testCaseIndex++; // Move to the next test case index
@@ -185,7 +173,8 @@ public class Main {
 
         // Find the correct position to insert the new node based on precedence rules
 
-        while (current != null && compareNodes(newNode, current) > 0) {
+        // if compareNodes returns a negative number, that means newNode has lower precedence.
+        while (current != null && compareNodes(newNode, current) < 0) {
             previous = current;
             current = current.getNext();
         }
@@ -200,21 +189,14 @@ public class Main {
     }
 
     // Compare two nodes based on precedence rules
-    private static int compareNodes(Node node1, Node node2) {
-        // Your implementation for comparing nodes goes here
-        // Compare based on precedence rules (x > y > z, higher exponent has higher precedence)
-        // Return a positive number if node1 > node2, negative if node1 < node2, and 0 if they are equal.
+    private static int compareNodes(Node newNode, Node current) {
+        // Compare based on components (x, y, z) and exponents of components
+        int componentComparison = newNode.compareToPrecedence(current);
 
-        // For example:
-        // Compare based on components (x, y, z)
-        int componentComparison = node2.compareToPrecedence(node1);
-        if (componentComparison != 0) {
-            return componentComparison;
-        }
-
-        // Compare based on exponent (higher exponent has higher precedence)
-        return Integer.compare(node2.getExponent(), node1.getExponent());
+        // this will be negative if newNode has lower precedence, positive if newNode has higher precedence
+        return componentComparison;
     }
+
 
     public static LinkedList polynomialAddition(LinkedList firstPolynom, LinkedList secondPolynom){
         LinkedList result = firstPolynom;
@@ -259,10 +241,6 @@ public class Main {
             LinkedList multipliedNodes = new LinkedList();
 
             while (currentNodeSecond != null){
-                // TODO CREATE LOGIC TO MULPTILPYING 2 NODES IN ANOTHER METHOD AND USE IT HERE
-                // TODO USE ADDITION METHOD WE CREATED EARLIER TO COMBINE THE NODES
-                // TODO DO THIS STEP FOR EVERY NODE IN FIRSTPOLYNOM, MULT THEM IN SECONDPOLYNOM'S NODES
-                // TODO AFTER EVERYTHING IS FINISHED, OUR JOB WOULD BE DONE.
                 Node multipliedNode = nodeMultiplication(currentNodeFirst, currentNodeSecond);
                 multipliedNodes.insertLast(multipliedNode);
                 currentNodeSecond = currentNodeSecond.getNext();
