@@ -10,6 +10,7 @@ import java.io.*;
  *
  * @author [Alperen Cengiz Ozturk]
  * @version 1.0
+ * finished
  */
 public class Main {
 
